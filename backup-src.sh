@@ -168,9 +168,10 @@ backup_src() {
 		source /etc/makepkg.conf
 		clean_var
 		source PKGBUILD
-		srcfile="$SRCDEST/$1/$pkgname-$pkgver-$pkgrel.src.tar.lzma"
+		srcpath="$SRCDEST/$1"
+		srcfile="$srcpath/$pkgname-$pkgver-$pkgrel.src.tar.lzma"
 		if [ "$pkgbase" != "" ]; then
-			srcfile="$SRCDEST/$1/$pkgbase-$pkgver-$pkgrel.src.tar.lzma"
+			srcfile="$srcpath/$pkgbase-$pkgver-$pkgrel.src.tar.lzma"
 		fi
 
 		if [ -f "$srcfile" ]; then
@@ -179,6 +180,21 @@ backup_src() {
 			if [ -d "$srcdir" ]; then
 				rm -R "$srcdir"
 			fi
+			oldsrcrel="$(find $srcpath -name "$pkgname-$pkgver-[0-9]*" | sort | head -1)"
+			oldsrcver="$(find $srcpath -name "$pkgname-[0-9]*" | sort | head -1)"
+			
+			if [ "$oldsrcrel" != "" ]; then
+				if [ "$oldsrcrel" != "$srcfile" ]; then
+					echo "Removing $oldsrcrel"
+					rm -vf $oldsrcrel
+				fi
+			elif [ "$oldsrcver" != "" ]; then
+				if [ "$oldsrcver" != "$srcfile" ]; then
+					echo "Removing $oldsrcver"
+					rm -vf $oldsrcver
+				fi
+			fi
+
 			if [ "$noextract" = "" ]; then
 				makepkg -o --asroot
 			else
