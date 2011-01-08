@@ -7,7 +7,7 @@ fi
 
 absdir=/var/abs
 makepkg_conf=/etc/makepkg.conf
-blacklist=$absdir/blacklist
+blacklist=$absdir/blacklist-$1
 
 clean_var() {
 	noextract=""
@@ -196,9 +196,9 @@ backup_src() {
 			fi
 
 			if [ "$noextract" = "" ]; then
-				makepkg -o --asroot
+				makepkg -o --holdver --asroot
 			else
-				makepkg -g --asroot
+				makepkg -g --holdver --asroot
 			fi
 			devel_sources
 			if [ ! -d "$SRCDEST/$1" ]; then
@@ -245,14 +245,7 @@ if [ "$2" = "" ]; then
 	fi
 elif [ "$2" != "" ]; then
 	if [ -d $absdir/$1/$2 ]; then
-		if [ -f "$blacklist" -a "$(grep -Fx "$2" "$blacklist")" ]; then
-			echo "Skipping $2"
-			exit 1
-		elif [ ! -f "$blacklist" ]; then
 			backup_src $1 $2
-		elif [ ! "$(grep -Fx "$2" "$blacklist")" ]; then
-			backup_src $1 $2
-		fi
 	else
 		echo "$absdir/$1/$2 doesn't exist"
 		exit 1
