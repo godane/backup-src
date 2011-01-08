@@ -1,9 +1,15 @@
+atanks
+autojump
+bomberclone
+barrage
+blobwars
+egoboo
 nexuiz
 nexuiz-data
 torcs
 torcs-data
 frogatto
-forgatto-data
+frogatto-data
 naev-data
 btanks
 btanks-data
@@ -82,3 +88,5 @@ cross-arm-wince-cegcc-newlib
 cross-arm-wince-cegcc-profile
 cross-arm-wince-cegcc-w32api
 sage-mathematics
+eclipse-phpeclipse
+eclipse-mylyn

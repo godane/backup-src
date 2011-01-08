@@ -76,6 +76,18 @@ devel_sources() {
 			svn co $_svntrunk --config-dir ./ -r $pkgver $_svnmod
 		fi
 		popd
+	elif [[ -n ${_svnroot} && -n ${_svnmod} ]]; then
+		if [ ! -d $srcdir ]; then
+			mkdir $srcdir
+		fi
+		pushd $srcdir
+		if [ -d $_svnmod/.svn ]; then
+			cd $_svnmod && svn up
+			pushd $srcdir
+		else
+			svn co $_svnroot/$_svnmod --config-dir ./ 
+		fi
+		popd
 	elif [[ -n ${_bzrtrunk} && -n ${_bzrmod} ]] ; then
 		if [ ! -d $srcdir ]; then
 			mkdir $srcdir
