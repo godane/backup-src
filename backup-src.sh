@@ -192,8 +192,14 @@ backup_src() {
 			if [ -d "$srcdir" ]; then
 				rm -R "$srcdir"
 			fi
-			oldsrcrel="$(find $srcpath -name "$pkgname-$pkgver-[0-9]*" | sort | head -1)"
-			oldsrcver="$(find $srcpath -name "$pkgname-[0-9]*" | sort | head -1)"
+
+			if [ "$pkgbase" != "" ]; then
+				oldsrcrel="$(find $srcpath -name "$pkgbase-$pkgver-[0-9]*" | sort | head -1)"
+				oldsrcver="$(find $srcpath -name "$pkgbase-[0-9]*" | sort | head -1)"
+			else
+				oldsrcrel="$(find $srcpath -name "$pkgname-$pkgver-[0-9]*" | sort | head -1)"
+				oldsrcver="$(find $srcpath -name "$pkgname-[0-9]*" | sort | head -1)"
+			fi
 			
 			if [ "$oldsrcrel" != "" ]; then
 				if [ "$oldsrcrel" != "$srcfile" ]; then
@@ -242,11 +248,11 @@ backup_src() {
 if [ "$2" = "" ]; then
 	if [ -d $absdir/$1 ]; then
 		for i in $(find $absdir/$1 -name "PKGBUILD" | sed "s|$absdir/$1/||" | sed "s|/PKGBUILD||" | sort); do 
-			if [ -f "$blacklist" -a "$(grep -Fx "$i" "$blacklist")" ]; then
-				echo "Skipping $i"
-				continue
-			elif [ ! -f "$blacklist" ]; then
+			if [ ! -f "$blacklist" ]; then
 				backup_src $1 $i
+			elif [ -f "$blacklist" -a "$(grep -Fx "$i" "$blacklist")" ]; then
+				echo "Skipping $i"
+				continue				
 			elif [ ! "$(grep -Fx "$i" "$blacklist")" ]; then
 				backup_src $1 $i
 			fi
@@ -257,7 +263,7 @@ if [ "$2" = "" ]; then
 	fi
 elif [ "$2" != "" ]; then
 	if [ -d $absdir/$1/$2 ]; then
-			backup_src $1 $2
+		backup_src $1 $2
 	else
 		echo "$absdir/$1/$2 doesn't exist"
 		exit 1
